@@ -1,7 +1,5 @@
 html,
 body {
-  padding: 0;
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
@@ -12,5 +10,16 @@ a {
 }
 
 * {
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
+}
+
+:root {
+  --app-height: 100vh;
+  --theme-color: #27b2e3;
+  --theme-color-lighten: #85d6f4;
+  --theme-color-darken: #0d6d97;
+  --dark-text: #9f9f9f;
+  --white-text: #fff;
 }
