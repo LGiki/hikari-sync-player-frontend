@@ -8,8 +8,12 @@ function Input(props: {
         bottom?: number
         left?: number
     }
+    value?: string
+    onChange?: (newValue: string) => void
 }) {
     return <input
+        value={props.value}
+        onChange={(e) => props.onChange && props.onChange(e.target.value)}
         placeholder={props.placeholder}
         className={css`
           border: 0;
