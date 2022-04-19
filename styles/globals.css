@@ -20,6 +20,8 @@ a {
   --theme-color: #27b2e3;
   --theme-color-lighten: #85d6f4;
   --theme-color-darken: #0d6d97;
+  --dark-text-darken: #6a6a6a;
   --dark-text: #9f9f9f;
+  --dark-text-lighten: #d1d1d1;
   --white-text: #fff;
 }
