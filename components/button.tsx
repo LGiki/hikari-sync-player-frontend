@@ -24,6 +24,7 @@ function Button(props: {
           margin-bottom: ${props.margin?.bottom || 0}px;
           margin-left: ${props.margin?.left || 0}px;
           transition: background-color 0.1s linear;
+          user-select: none;
 
           &:active {
             background-color: var(--theme-color-lighten);
