@@ -26,6 +26,7 @@ function MyApp({Component, pageProps}: AppProps) {
         </Head>
         <Component {...pageProps} />
         <ToastContainer
+            limit={3}
             position="bottom-center"
             autoClose={3000}
             hideProgressBar={true}
