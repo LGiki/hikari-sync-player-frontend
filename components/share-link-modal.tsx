@@ -1,5 +1,5 @@
 import {css} from "@emotion/css";
-import QRCode from "react-qr-code";
+import {QRCodeSVG} from 'qrcode.react';
 import Modal from "./modal";
 
 function ShareLinkModal(props: {
@@ -23,7 +23,14 @@ function ShareLinkModal(props: {
               }
             `}>
             <p>请将该二维码分享给一起听的朋友：</p>
-            <QRCode value={props.url}/>
+            <QRCodeSVG
+                value={props.url}
+                bgColor='#fff'
+                fgColor='#000'
+                level='L'
+                size={250}
+                includeMargin={false}
+            />
             <p>或将该链接分享给一起听的朋友：</p>
             <input
                 className={css`
