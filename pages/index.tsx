@@ -3,7 +3,7 @@ import Button from "../components/button"
 import {css, keyframes} from "@emotion/css"
 import Input from "../components/input"
 import CosmosLines from "../components/cosmos-lines";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import {toast} from "react-toastify";
 import {useRouter} from "next/router";
 import Head from "next/head";
@@ -30,6 +30,46 @@ const heartAnimation = keyframes`
 const Home: NextPage = () => {
     const [url, setUrl] = useState('')
     const router = useRouter()
+
+    const handleCreateRoom = useCallback(() => {
+        if (url.length === 0) {
+            toast.error('请输入链接')
+            return
+        }
+
+        if (!url.startsWith('https://') && !url.startsWith('http://')) {
+            toast.error('请检查输入链接是否正确')
+            return
+        }
+
+        if (url.includes('xiaoyuzhoufm.com') && !url.includes('xiaoyuzhoufm.com/episode')) {
+            toast.error('请输入小宇宙单集链接')
+            return
+        }
+
+        if (url.includes('cowtransfer.com') && !url.includes('cowtransfer.com/s')) {
+            toast.error('请输入奶牛快传分享链接')
+            return
+        }
+
+        fetch(`${API_BASE_URL}/api/v1/room`, {
+            method: 'POST',
+            body: JSON.stringify({
+                "url": url
+            })
+        })
+            .then(res => res.json())
+            .then(json => {
+                if (json['code'] !== 200) {
+                    toast.error(`错误：${json['msg']}`)
+                } else {
+                    router.push(`/player/${json['data']['type']}/${json['data']['roomId']}`)
+                }
+            })
+            .catch(() => {
+                toast.error('发送请求失败，请稍后再试')
+            })
+    }, [router, url])
 
     return (
         <div
@@ -86,48 +126,15 @@ const Home: NextPage = () => {
                         placeholder='https://'
                         value={url}
                         onChange={(newValue) => setUrl(newValue)}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                                handleCreateRoom()
+                            }
+                        }}
                     />
                     <Button
                         margin={{top: 10}}
-                        onClick={() => {
-                            if (url.length === 0) {
-                                toast.error('请输入链接')
-                                return
-                            }
-
-                            if (!url.startsWith('https://') && !url.startsWith('http://')) {
-                                toast.error('请检查输入链接是否正确')
-                                return
-                            }
-
-                            if (url.includes('xiaoyuzhoufm.com') && !url.includes('xiaoyuzhoufm.com/episode')) {
-                                toast.error('请输入小宇宙单集链接')
-                                return
-                            }
-
-                            if (url.includes('cowtransfer.com') && !url.includes('cowtransfer.com/s')) {
-                                toast.error('请输入奶牛快传分享链接')
-                                return
-                            }
-
-                            fetch(`${API_BASE_URL}/api/v1/room`, {
-                                method: 'POST',
-                                body: JSON.stringify({
-                                    "url": url
-                                })
-                            })
-                                .then(res => res.json())
-                                .then(json => {
-                                    if (json['code'] !== 200) {
-                                        toast.error(`错误：${json['msg']}`)
-                                    } else {
-                                        router.push(`/player/${json['data']['type']}/${json['data']['roomId']}`)
-                                    }
-                                })
-                                .catch(() => {
-                                    toast.error('发送请求失败，请稍后再试')
-                                })
-                        }}
+                        onClick={handleCreateRoom}
                     >
                         确定
                     </Button>
