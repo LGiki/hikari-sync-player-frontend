@@ -1,5 +1,6 @@
 import {css} from "@emotion/css";
-import {KeyboardEvent} from 'react';
+import {KeyboardEvent, MutableRefObject} from 'react';
+import {ASSETS_BASE_URL} from "../util/constants";
 
 function Input(props: {
     placeholder?: string
@@ -13,34 +14,58 @@ function Input(props: {
     value?: string
     onChange?: (newValue: string) => void
     onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void
+    onClearClick?: () => void
+    inputRef?: MutableRefObject<HTMLInputElement | null>
 }) {
-    return <input
-        value={props.value}
-        onKeyDown={props.onKeyDown}
-        onChange={(e) => props.onChange && props.onChange(e.target.value)}
-        placeholder={props.placeholder}
-        enterKeyHint={props.enterKeyHint}
+    return <div
         className={css`
-          border: 0;
-          border-radius: 3px;
-          padding: 8px 15px;
-          background-color: #f3f2f8;
-          outline: none;
-          -webkit-appearance: none;
-          font-size: 1rem;
-          color: #626264;
           margin-top: ${props.margin?.top || 0}px;
           margin-right: ${props.margin?.right || 0}px;
           margin-bottom: ${props.margin?.bottom || 0}px;
           margin-left: ${props.margin?.left || 0}px;
+          width: 100%;
+          display: flex;
+          border-radius: 3px;
+          padding: 8px 15px;
+          background-color: #f3f2f8;
+          align-items: center;
+        `}>
+        <input
+            ref={props.inputRef}
+            value={props.value}
+            onKeyDown={props.onKeyDown}
+            onChange={(e) => props.onChange && props.onChange(e.target.value)}
+            placeholder={props.placeholder}
+            enterKeyHint={props.enterKeyHint}
+            className={css`
+              flex: 1;
+              border: 0;
+              outline: none;
+              -webkit-appearance: none;
+              background-color: transparent;
+              font-size: 1rem;
+              color: #626264;
 
-          &::placeholder {
-            color: #bdbcc2;
-          }
-        `}
-    >
-
-    </input>
+              &::placeholder {
+                color: #bdbcc2;
+              }
+            `}
+        />
+        {
+            props.value?.length !== 0 && <img
+                alt='Clear'
+                title='Clear'
+                src={`${ASSETS_BASE_URL}/icons/clear.svg`}
+                className={css`
+                  margin-left: 8px;
+                  width: 16px;
+                  height: 16px;
+                  cursor: pointer;
+                `}
+                onClick={props.onClearClick}
+            />
+        }
+    </div>
 }
 
 export default Input

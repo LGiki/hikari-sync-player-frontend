@@ -3,7 +3,7 @@ import Button from "../components/button"
 import {css, keyframes} from "@emotion/css"
 import Input from "../components/input"
 import CosmosLines from "../components/cosmos-lines";
-import {useCallback, useState} from "react";
+import {useCallback, useRef, useState} from "react";
 import {toast} from "react-toastify";
 import {useRouter} from "next/router";
 import Head from "next/head";
@@ -30,6 +30,7 @@ const heartAnimation = keyframes`
 const Home: NextPage = () => {
     const [url, setUrl] = useState('')
     const router = useRouter()
+    const urlInputRef = useRef<HTMLInputElement | null>(null)
 
     const handleCreateRoom = useCallback(() => {
         if (url.length === 0) {
@@ -122,9 +123,15 @@ const Home: NextPage = () => {
                         ✨ Hikari Listen Together
                     </div>
                     <Input
+                        inputRef={urlInputRef}
                         margin={{top: 10}}
                         placeholder='https://'
                         value={url}
+                        enterKeyHint='go'
+                        onClearClick={() => {
+                            setUrl('')
+                            urlInputRef.current?.focus()
+                        }}
                         onChange={(newValue) => setUrl(newValue)}
                         onKeyDown={e => {
                             if (e.key === 'Enter') {
