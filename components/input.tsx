@@ -1,4 +1,5 @@
 import {css} from "@emotion/css";
+import {KeyboardEvent} from 'react';
 
 function Input(props: {
     placeholder?: string
@@ -10,9 +11,11 @@ function Input(props: {
     }
     value?: string
     onChange?: (newValue: string) => void
+    onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void
 }) {
     return <input
         value={props.value}
+        onKeyDown={props.onKeyDown}
         onChange={(e) => props.onChange && props.onChange(e.target.value)}
         placeholder={props.placeholder}
         className={css`
