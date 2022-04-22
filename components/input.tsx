@@ -9,6 +9,7 @@ function Input(props: {
         bottom?: number
         left?: number
     }
+    enterKeyHint?: 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'
     value?: string
     onChange?: (newValue: string) => void
     onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void
@@ -18,6 +19,7 @@ function Input(props: {
         onKeyDown={props.onKeyDown}
         onChange={(e) => props.onChange && props.onChange(e.target.value)}
         placeholder={props.placeholder}
+        enterKeyHint={props.enterKeyHint}
         className={css`
           border: 0;
           border-radius: 3px;
