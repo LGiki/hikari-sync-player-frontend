@@ -4,6 +4,8 @@ import React, {useCallback, useRef} from "react";
 function ProgressBar(props: {
     progress: number
     onSeek: (newProgress: number) => void
+    onSeekBegin?: () => void
+    onSeekEnd?: () => void
     height?: number
     margin?: {
         top?: number
@@ -23,13 +25,19 @@ function ProgressBar(props: {
 
     return <div
         ref={progressBarRef}
+        onTouchStart={props.onSeekBegin}
         onTouchMove={handleProgressChange}
-        onMouseDown={handleProgressChange}
+        onTouchEnd={props.onSeekEnd}
+        onMouseDownCapture={props.onSeekBegin}
+        onMouseDown={e => {
+            handleProgressChange(e)
+        }}
         onMouseMove={e => {
             if (e.buttons === 1) {
                 handleProgressChange(e)
             }
         }}
+        onMouseUpCapture={props.onSeekEnd}
         className={css`
           background-color: rgba(255, 255, 255, .15);
           position: relative;

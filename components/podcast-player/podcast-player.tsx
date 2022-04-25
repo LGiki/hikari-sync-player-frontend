@@ -27,6 +27,9 @@ function PodcastPlayer(props: {
     const [isPlayable, setIsPlayable] = useState(false)
 
     const [playSpeed, setPlaySpeed] = useState(1.0)
+
+    const [isSeeking, setIsSeeking] = useState(false)
+
     const audioPlayerRef = useRef<HTMLAudioElement>(null)
 
     const userIdRef = useRef(generateUserId())
@@ -113,13 +116,16 @@ function PodcastPlayer(props: {
         }
     }, [sendMessage])
 
-    const debouncedSendSeekToMessage = useDebouncedCallback((newCurrentTime: number) => {
-        sendMessage(JSON.stringify({
-            event: 'seekTo',
-            userId: userIdRef.current,
-            data: newCurrentTime
-        }))
-    }, 100)
+    const debouncedSeekTo = useDebouncedCallback((newCurrentTime: number) => {
+        if (audioPlayerRef.current) {
+            audioPlayerRef.current.currentTime = newCurrentTime
+            sendMessage(JSON.stringify({
+                event: 'seekTo',
+                userId: userIdRef.current,
+                data: newCurrentTime
+            }))
+        }
+    }, 50)
 
     useEffect(() => {
         const handleLoadedMetaData = () => {
@@ -245,11 +251,12 @@ function PodcastPlayer(props: {
         <ProgressBar
             progress={playedProgress}
             margin={{top: 5}}
+            onSeekBegin={() => setIsSeeking(true)}
+            onSeekEnd={() => setIsSeeking(false)}
             onSeek={newProgress => {
                 if (audioPlayerRef.current) {
-                    const newCurrentTime = audioPlayerRef.current.duration * newProgress
-                    audioPlayerRef.current.currentTime = newCurrentTime
-                    debouncedSendSeekToMessage(newCurrentTime)
+                    setPlayedProgress(newProgress)
+                    debouncedSeekTo(audioPlayerRef.current.duration * newProgress)
                 }
             }}
         />
@@ -330,7 +337,9 @@ function PodcastPlayer(props: {
                 const duration = parseInt(target.duration.toFixed(0))
                 setPlayTime(secondsToTime(currentTime))
                 setLeftTime(secondsToTime(duration - currentTime))
-                setPlayedProgress(duration == 0 ? 0 : currentTime / duration)
+                if (!isSeeking) {
+                    setPlayedProgress(duration === 0 ? 0 : currentTime / duration)
+                }
             }}
             onPlay={() => {
                 setIsPlaying(true)
