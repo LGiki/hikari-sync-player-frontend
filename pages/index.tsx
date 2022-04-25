@@ -53,7 +53,7 @@ const Home: NextPage = () => {
             return
         }
 
-        fetch(`${API_BASE_URL}/api/v1/room`, {
+        fetch(`${API_BASE_URL}/room`, {
             method: 'POST',
             body: JSON.stringify({
                 "url": url

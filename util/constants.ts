@@ -1,5 +1,5 @@
 const API_HOST = '192.168.1.241:12312'
-const API_BASE_URL = `http://${API_HOST}`
+const API_BASE_URL = `http://${API_HOST}/api/v1`
 const ASSETS_BASE_URL = ''
 
 export {API_HOST, API_BASE_URL, ASSETS_BASE_URL}
