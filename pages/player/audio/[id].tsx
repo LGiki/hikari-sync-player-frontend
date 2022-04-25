@@ -56,7 +56,7 @@ function AudioPlayer(props: {
         <img
             alt='podcast cover'
             title={props.title}
-            src={props.coverUrl}
+            src={props.coverUrl || `${ASSETS_BASE_URL}/images/podcast.svg`}
             className={css`
               max-height: 300px;
               height: calc(var(--app-height) * .5);
