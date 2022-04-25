@@ -3,7 +3,7 @@ import Button from "../components/button"
 import {css, keyframes} from "@emotion/css"
 import Input from "../components/input"
 import CosmosLines from "../components/cosmos-lines";
-import {useCallback, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {toast} from "react-toastify";
 import {useRouter} from "next/router";
 import Head from "next/head";
@@ -31,6 +31,11 @@ const Home: NextPage = () => {
     const [url, setUrl] = useState('')
     const router = useRouter()
     const urlInputRef = useRef<HTMLInputElement | null>(null)
+
+    // Autofocus to url input when page loaded
+    useEffect(() => {
+        urlInputRef.current?.focus()
+    }, [])
 
     const handleCreateRoom = useCallback(() => {
         if (url.length === 0) {
