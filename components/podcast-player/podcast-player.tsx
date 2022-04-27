@@ -34,7 +34,11 @@ function PodcastPlayer(props: {
 
     const userIdRef = useRef(generateUserId())
 
-    const {sendMessage, lastMessage, readyState} = useWebSocket(`${WS_BASE_URL}/${props.roomId}`);
+    const {sendMessage, lastMessage, readyState} = useWebSocket(`${WS_BASE_URL}/${props.roomId}`, {
+        shouldReconnect: () => true,
+        reconnectAttempts: 10,
+        reconnectInterval: 3000,
+    });
 
     const connectionStatus = {
         [ReadyState.CONNECTING]: '正在建立连接…',
