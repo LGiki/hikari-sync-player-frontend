@@ -1,7 +1,8 @@
 {
   "name": "hikari-sync-player",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "author": "LGiki",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
