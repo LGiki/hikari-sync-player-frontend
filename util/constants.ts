@@ -1,5 +1,3 @@
-const API_HOST = '192.168.1.241:12312'
-const API_BASE_URL = `http://${API_HOST}/api/v1`
-const ASSETS_BASE_URL = ''
-
-export {API_HOST, API_BASE_URL, ASSETS_BASE_URL}
+export const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:12321/api/v1'
+export const WS_BASE_URL = process.env.WS_BASE_URL || 'ws://localhost:12321/api/v1/room/ws'
+export const ASSETS_BASE_URL = process.env.ASSETS_BASE_URL || ''

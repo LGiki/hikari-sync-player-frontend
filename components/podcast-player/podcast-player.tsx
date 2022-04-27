@@ -4,7 +4,7 @@ import {css} from "@emotion/css";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {generateUserId, secondsToTime} from '../../util/player'
 import {toast} from "react-toastify";
-import {API_HOST, ASSETS_BASE_URL} from "../../util/constants";
+import {ASSETS_BASE_URL, WS_BASE_URL} from "../../util/constants";
 import useWebSocket, {ReadyState} from "react-use-websocket";
 import {useDebouncedCallback} from "use-debounce";
 
@@ -34,7 +34,7 @@ function PodcastPlayer(props: {
 
     const userIdRef = useRef(generateUserId())
 
-    const {sendMessage, lastMessage, readyState} = useWebSocket(`ws://${API_HOST}/api/v1/room/ws/${props.roomId}`);
+    const {sendMessage, lastMessage, readyState} = useWebSocket(`${WS_BASE_URL}/${props.roomId}`);
 
     const connectionStatus = {
         [ReadyState.CONNECTING]: '正在建立连接…',
