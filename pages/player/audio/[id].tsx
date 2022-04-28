@@ -63,6 +63,20 @@ function AudioPlayer(props: {
               border-radius: 5px;
               aspect-ratio: 1;
               margin-bottom: calc(var(--app-height) * .05);
+              transition: max-height .2s ease-in-out;
+              @media (max-height: 667px) {
+                max-height: 250px;
+                margin-bottom: calc(var(--app-height) * .03);
+              }
+
+              @media (max-height: 560px) {
+                max-height: 150px;
+                margin-bottom: 5px;
+              }
+
+              @media (max-height: 430px) {
+                display: none;
+              }
             `}
         />
         <PodcastPlayer
