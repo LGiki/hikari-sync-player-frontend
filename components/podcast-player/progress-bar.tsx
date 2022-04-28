@@ -28,16 +28,26 @@ function ProgressBar(props: {
         onTouchStart={props.onSeekBegin}
         onTouchMove={handleProgressChange}
         onTouchEnd={props.onSeekEnd}
-        onMouseDownCapture={props.onSeekBegin}
+        onMouseDownCapture={e => {
+            if (e.buttons === 1) {
+                props.onSeekBegin && props.onSeekBegin()
+            }
+        }}
         onMouseDown={e => {
-            handleProgressChange(e)
+            if (e.buttons === 1) {
+                handleProgressChange(e)
+            }
         }}
         onMouseMove={e => {
             if (e.buttons === 1) {
                 handleProgressChange(e)
             }
         }}
-        onMouseUpCapture={props.onSeekEnd}
+        onMouseUpCapture={e => {
+            if (e.buttons === 1) {
+                props.onSeekEnd && props.onSeekEnd()
+            }
+        }}
         className={css`
           background-color: rgba(255, 255, 255, .15);
           position: relative;
