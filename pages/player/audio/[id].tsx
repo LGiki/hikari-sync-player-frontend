@@ -2,7 +2,7 @@ import {css} from "@emotion/css";
 import PodcastPlayer from "../../../components/podcast-player/podcast-player";
 import {GetServerSidePropsContext} from "next";
 import Head from "next/head";
-import {API_BASE_URL, ASSETS_BASE_URL} from "../../../util/constants";
+import {API_BASE_URL, ASSETS_BASE_URL, WEBSITE_TITLE} from "../../../util/constants";
 import {useEffect, useState} from "react";
 import ShareLinkModal from "../../../components/share-link-modal";
 import {useRouter} from "next/router";
@@ -35,7 +35,7 @@ function AudioPlayer(props: {
     `}
     >
         <Head>
-            <title>{props.title} - ✨ Hikari Listen Together</title>
+            <title>{props.title} - {WEBSITE_TITLE}</title>
         </Head>
         <img
             alt='Share'

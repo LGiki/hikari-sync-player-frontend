@@ -7,7 +7,7 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import {toast} from "react-toastify";
 import {useRouter} from "next/router";
 import Head from "next/head";
-import {API_BASE_URL} from "../util/constants";
+import {API_BASE_URL, WEBSITE_TITLE} from "../util/constants";
 
 const heartAnimation = keyframes`
   0%, 100% {
@@ -89,7 +89,7 @@ const Home: NextPage = () => {
             `}
         >
             <Head>
-                <title>✨ Hikari Listen Together</title>
+                <title>{WEBSITE_TITLE}</title>
             </Head>
             <div
                 className={css`
@@ -125,7 +125,7 @@ const Home: NextPage = () => {
                       font-weight: 600;
                       color: var(--theme-color);
                     `}>
-                        ✨ Hikari Listen Together
+                        {WEBSITE_TITLE}
                     </div>
                     <Input
                         inputRef={urlInputRef}
