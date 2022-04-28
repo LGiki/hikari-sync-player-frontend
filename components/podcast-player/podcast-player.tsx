@@ -4,11 +4,9 @@ import {css} from "@emotion/css";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {generateUserId, secondsToTime} from '../../util/player'
 import {toast} from "react-toastify";
-import {ASSETS_BASE_URL, WS_BASE_URL} from "../../util/constants";
+import {WS_BASE_URL} from "../../util/constants";
 import useWebSocket, {ReadyState} from "react-use-websocket";
 import {useDebouncedCallback} from "use-debounce";
-
-const PlaySpeedSelections = [0.5, 0.8, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.5]
 
 function PodcastPlayer(props: {
     roomId: string
@@ -17,6 +15,7 @@ function PodcastPlayer(props: {
     themeColor: string
     audioUrl: string
     coverUrl: string
+    playSpeedSelections: number[]
 }) {
     const [isPlaying, setIsPlaying] = useState(false)
 
@@ -235,7 +234,7 @@ function PodcastPlayer(props: {
             {props.title}
         </div>
         <div className={css`
-          color: ${props.themeColor || 'hsl(35,60.2%,57.6%)'};
+          color: ${props.themeColor};
           font-size: 1.1rem;
           font-weight: 500;
           text-align: center;
@@ -265,9 +264,13 @@ function PodcastPlayer(props: {
             }}
         />
         <ControlButtons
+            themeColor={props.themeColor}
             isPlayable={isPlayable}
-            margin={{top: 10}}
+            margin={{top: 20}}
             isPlaying={isPlaying}
+            playSpeed={playSpeed}
+            playSpeedSelections={props.playSpeedSelections}
+            onPlaySpeedChange={handlePlaySpeedChange}
             onPlayClick={() => {
                 if (!isPlayable) {
                     toast.error('音频还未加载完毕！')
@@ -281,53 +284,16 @@ function PodcastPlayer(props: {
             }}
             onBackwardClick={handleBackward}
             onForwardClick={handleForward}
-        />
-        <select
-            className={css`
-              appearance: none;
-              outline: 0;
-              border: 0;
-              padding: 0 1em;
-              color: ${props.themeColor || 'hsl(35,60.2%,57.6%)'};
-              background-color: transparent;
-              background-image: none;
-              cursor: pointer;
-              font-size: 1.1rem;
-              font-weight: 500;
-              margin-top: 5px;
-            `}
-            value={playSpeed}
-            onChange={e => {
-                handlePlaySpeedChange(parseFloat(e.target.value))
+            onSyncToEveryOneClick={() => {
+                if (audioPlayerRef.current) {
+                    handleSeekTo(audioPlayerRef.current.currentTime)
+                }
             }}
-        >
-            {PlaySpeedSelections.map(item => <option key={item} value={item}>{item.toFixed(1)}x</option>)}
-        </select>
+        />
         <div className={css`
           color: #fff;
-          display: flex;
-          align-items: center;
-          margin-top: 5px;
+          margin-top: 15px;
         `}>
-            {
-                readyState === ReadyState.OPEN &&
-                <img
-                    width={12}
-                    height={12}
-                    alt='Sync'
-                    title='将当前进度同步给所有人'
-                    src={`${ASSETS_BASE_URL}/icons/sync.svg`}
-                    className={css`
-                      margin-right: 5px;
-                      cursor: pointer;
-                    `}
-                    onClick={() => {
-                        if (audioPlayerRef.current) {
-                            handleSeekTo(audioPlayerRef.current.currentTime)
-                        }
-                    }}
-                />
-            }
             {connectionStatus}
         </div>
         <audio
@@ -359,6 +325,11 @@ function PodcastPlayer(props: {
             }}
         ></audio>
     </div>
+}
+
+PodcastPlayer.defaultProps = {
+    playSpeedSelections: [0.5, 0.8, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.5],
+    themeColor: 'hsl(35,60.2%,57.6%)'
 }
 
 export default PodcastPlayer
