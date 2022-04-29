@@ -36,6 +36,14 @@ function AudioPlayer(props: {
     >
         <Head>
             <title>{props.title} - {WEBSITE_TITLE}</title>
+            <meta property="og:title" content={props.title}/>
+            <meta property="og:description" content={props.title}/>
+            <meta property="og:image" content={props.coverUrl}/>
+            <meta property="og:audio" content={props.enclosureUrl}/>
+            <meta property="twitter:card" content="summary"/>
+            <meta property="twitter:image" content={props.coverUrl}/>
+            <meta property="twitter:title" content={props.title}/>
+            <meta property="twitter:description" content={props.title}/>
         </Head>
         <img
             alt='Share'
