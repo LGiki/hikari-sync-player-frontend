@@ -3,9 +3,10 @@ import PodcastPlayer from "../../../components/podcast-player/podcast-player";
 import {GetServerSidePropsContext} from "next";
 import Head from "next/head";
 import {API_BASE_URL, ASSETS_BASE_URL, WEBSITE_TITLE} from "../../../util/constants";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import ShareLinkModal from "../../../components/share-link-modal";
 import {useRouter} from "next/router";
+import Color from 'color';
 
 function AudioPlayer(props: {
     coverUrl: string
@@ -19,6 +20,13 @@ function AudioPlayer(props: {
     const [isQrCodeModalVisible, setIsQrCodeModalVisible] = useState(false)
     const [url, setUrl] = useState('')
 
+    const suitableThemeColor = useMemo(() => {
+        const color = Color(props.themeColor)
+        // The WCAG level AA requires a contrast ratio of at least 4.5:1 for normal text.
+        // See <https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html>.
+        return color.contrast(color.darken(.7)) < 4.5 ? color.lighten(.15).string() : props.themeColor
+    }, [props.themeColor])
+
     useEffect(() => {
         setUrl(window.location.href)
     }, [])
@@ -28,7 +36,6 @@ function AudioPlayer(props: {
       flex-direction: column;
       height: var(--app-height);
       width: 100vw;
-      background-color: #231e1b;
       align-items: center;
       justify-content: center;
       overflow: hidden;
@@ -45,6 +52,47 @@ function AudioPlayer(props: {
             <meta property="twitter:title" content={props.title}/>
             <meta property="twitter:description" content={props.title}/>
         </Head>
+        <div className={css`
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          right: 0;
+          background-color: ${Color(props.themeColor).darken(.7).string()};
+          z-index: -3;
+        `}/>
+        <div className={css`
+          width: 50%;
+          height: 50%;
+          position: absolute;
+          bottom: -25%;
+          left: -25%;
+          border-radius: 50%;
+          background-color: ${suitableThemeColor};
+          filter: blur(128px);
+          z-index: -2;
+        `}/>
+        <div className={css`
+          width: 50%;
+          height: 50%;
+          position: absolute;
+          top: -25%;
+          right: -25%;
+          border-radius: 50%;
+          background-color: ${suitableThemeColor};
+          filter: blur(128px);
+          z-index: -2;
+        `}/>
+        <div className={css`
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          background-color: rgba(0, 0, 0, .6);
+          backdrop-filter: blur(128px);
+          z-index: -1;
+        `}/>
         <img
             alt='Share'
             title='Share'
@@ -91,7 +139,7 @@ function AudioPlayer(props: {
             roomId={id as string}
             title={props.title}
             podcastName={props.podcastName}
-            themeColor={props.themeColor}
+            themeColor={suitableThemeColor}
             audioUrl={props.enclosureUrl}
             coverUrl={props.coverUrl}
         />
@@ -101,6 +149,10 @@ function AudioPlayer(props: {
             onNegative={() => setIsQrCodeModalVisible(false)}
         />
     </div>
+}
+
+AudioPlayer.defaultProps = {
+    themeColor: 'hsl(35,60.2%,57.6%)'
 }
 
 

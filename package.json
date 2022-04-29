@@ -12,6 +12,8 @@
   "dependencies": {
     "@emotion/css": "^11.9.0",
     "@emotion/server": "^11.4.0",
+    "@types/color": "^3.0.3",
+    "color": "^4.2.3",
     "nanoid": "^3.3.3",
     "next": "12.1.5",
     "next-pwa": "^5.5.2",
