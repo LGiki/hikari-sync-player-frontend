@@ -23,18 +23,10 @@ function VideoPlayer(props: {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const {id} = context.query
-
     const data = await fetch(`${API_BASE_URL}/room/${id}`)
         .then(res => res.json())
-        .catch(() => {
-            return {
-                redirect: {
-                    destination: '/',
-                    permanent: false
-                }
-            }
-        })
-    if (data.code !== 200) {
+        .catch(err => console.log(err))
+    if (!data || data.code !== 200) {
         return {
             redirect: {
                 destination: '/',
