@@ -47,6 +47,7 @@ export default class MyDocument extends Document {
                     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png"/>
                     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180.png"/>
                     <meta name="nightmode" content="disable"/>
+                    <meta name="color-scheme" content="light only"/>
                     <meta name="renderer" content="webkit"/>
                     <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
                 </Head>
