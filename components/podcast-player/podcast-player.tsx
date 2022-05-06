@@ -49,14 +49,27 @@ function PodcastPlayer(props: {
 
   const handlePlay = useCallback(() => {
     if (audioPlayerRef.current) {
-      sendMessage(
-        JSON.stringify({
-          event: 'play',
-          userId: userIdRef.current,
-          data: null,
-        }),
-      )
-      audioPlayerRef.current.play()
+      audioPlayerRef.current
+        .play()
+        .then(() => {
+          // send the play message only when the audio is successfully played
+          sendMessage(
+            JSON.stringify({
+              event: 'play',
+              userId: userIdRef.current,
+              data: null,
+            }),
+          )
+        })
+        .catch((e) => {
+          if (e.name === 'NotAllowedError') {
+            toast.error('播放失败，您的浏览器禁止播放音频，请重新点击播放按钮或刷新页面重试')
+          } else if (e.name === 'NotSupportedError') {
+            toast.error('播放失败，您的浏览器不支持该格式的音频文件')
+          } else {
+            toast.error(`播放失败，未知错误：${e.message}`)
+          }
+        })
     }
   }, [sendMessage])
 
@@ -194,7 +207,20 @@ function PodcastPlayer(props: {
             break
           case 'play':
             audioPlayerRef.current.volume = 1.0
-            audioPlayerRef.current.play()
+            audioPlayerRef.current.play().catch((e) => {
+              if (e.name === 'NotAllowedError') {
+                toast.error(
+                  <>
+                    与您一起听的好友尝试播放音频，但您的浏览器禁止播放音频，请手动点击<b>同步</b>
+                    按钮同步您的播放状态
+                  </>,
+                )
+              } else if (e.name === 'NotSupportedError') {
+                toast.error('与您一起听的好友尝试播放音频，但您的浏览器不支持该格式的音频文件')
+              } else {
+                toast.error(`与您一起听的好友尝试播放音频，但发生了未知错误：${e.message}`)
+              }
+            })
             break
           case 'pause':
             audioPlayerRef.current.pause()
