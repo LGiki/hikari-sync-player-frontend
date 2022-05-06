@@ -1,32 +1,32 @@
 html,
 body {
-    width: 100vw;
-    height: var(--app-height);
-    /* See <https://stackoverflow.com/questions/3047337/does-overflowhidden-applied-to-body-work-on-iphone-safari>. */
-    position: relative;
-    overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  width: 100vw;
+  height: var(--app-height);
+  /* See <https://stackoverflow.com/questions/3047337/does-overflowhidden-applied-to-body-work-on-iphone-safari>. */
+  position: relative;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 :root {
-    --app-height: 100vh;
-    --theme-color: #27b2e3;
-    --theme-color-lighten: #85d6f4;
-    --theme-color-darken: #0d6d97;
-    --dark-text-darken: #6a6a6a;
-    --dark-text: #9f9f9f;
-    --dark-text-lighten: #d1d1d1;
-    --white-text: #fff;
+  --app-height: 100vh;
+  --theme-color: #27b2e3;
+  --theme-color-lighten: #85d6f4;
+  --theme-color-darken: #0d6d97;
+  --dark-text-darken: #6a6a6a;
+  --dark-text: #9f9f9f;
+  --dark-text-lighten: #d1d1d1;
+  --white-text: #fff;
 }
