@@ -19,6 +19,10 @@ function PodcastPlayer(props: {
 }) {
   const [isPlaying, setIsPlaying] = useState(false)
 
+  // isPlayButtonClicked indicates whether the user has clicked the play button,
+  // and will remain true after the play button has been clicked.
+  const [isPlayButtonClicked, setIsPlayButtonClicked] = useState(false)
+
   const [playedTime, setPlayTime] = useState('00:00:00')
   const [leftTime, setLeftTime] = useState('00:00:00')
 
@@ -47,121 +51,207 @@ function PodcastPlayer(props: {
     [ReadyState.UNINSTANTIATED]: '未知',
   }[readyState]
 
-  const handlePlay = useCallback(() => {
-    if (audioPlayerRef.current) {
-      audioPlayerRef.current
-        .play()
-        .then(() => {
-          // send the play message only when the audio is successfully played
+  const handlePlay = useCallback(
+    (broadcast: boolean = true) => {
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.volume = 1.0
+        audioPlayerRef.current
+          .play()
+          .then(() => {
+            // send the play message only when the audio is successfully played
+            if (broadcast) {
+              sendMessage(
+                JSON.stringify({
+                  event: 'play',
+                  userId: userIdRef.current,
+                  data: null,
+                }),
+              )
+            }
+          })
+          .catch((e) => {
+            if (e.name === 'NotAllowedError') {
+              toast.error('播放失败，您的浏览器禁止播放音频，请重新点击播放按钮或刷新页面重试')
+            } else if (e.name === 'NotSupportedError') {
+              toast.error('播放失败，您的浏览器不支持该格式的音频文件')
+            } else {
+              toast.error(`播放失败，未知错误：${e.message}`)
+            }
+          })
+      }
+    },
+    [sendMessage],
+  )
+
+  const handlePause = useCallback(
+    (broadcast: boolean = true) => {
+      if (audioPlayerRef.current) {
+        if (broadcast) {
           sendMessage(
             JSON.stringify({
-              event: 'play',
+              event: 'pause',
               userId: userIdRef.current,
               data: null,
             }),
           )
-        })
-        .catch((e) => {
-          if (e.name === 'NotAllowedError') {
-            toast.error('播放失败，您的浏览器禁止播放音频，请重新点击播放按钮或刷新页面重试')
-          } else if (e.name === 'NotSupportedError') {
-            toast.error('播放失败，您的浏览器不支持该格式的音频文件')
-          } else {
-            toast.error(`播放失败，未知错误：${e.message}`)
-          }
-        })
-    }
-  }, [sendMessage])
-
-  const handlePause = useCallback(() => {
-    if (audioPlayerRef.current) {
-      sendMessage(
-        JSON.stringify({
-          event: 'pause',
-          userId: userIdRef.current,
-          data: null,
-        }),
-      )
-      audioPlayerRef.current.pause()
-    }
-  }, [sendMessage])
+        }
+        audioPlayerRef.current.pause()
+      }
+    },
+    [sendMessage],
+  )
 
   const handleSeekTo = useCallback(
-    (seekTo: number) => {
+    (seekTo: number, broadcast: boolean = true) => {
       if (audioPlayerRef.current) {
-        sendMessage(
-          JSON.stringify({
-            event: 'seekTo',
-            userId: userIdRef.current,
-            data: seekTo,
-          }),
-        )
-        audioPlayerRef.current.currentTime = seekTo
+        let realSeekTo = seekTo
+        if (seekTo > audioPlayerRef.current.duration) {
+          realSeekTo = audioPlayerRef.current.duration
+        } else if (seekTo < 0) {
+          realSeekTo = 0
+        }
+        if (broadcast) {
+          sendMessage(
+            JSON.stringify({
+              event: 'seekTo',
+              userId: userIdRef.current,
+              data: realSeekTo,
+            }),
+          )
+        }
+        audioPlayerRef.current.currentTime = realSeekTo
       }
     },
     [sendMessage],
   )
 
   const handlePlaySpeedChange = useCallback(
-    (playSpeed: number) => {
+    (playSpeed: number, broadcast: boolean = true) => {
       if (audioPlayerRef.current) {
-        sendMessage(
-          JSON.stringify({
-            event: 'playSpeed',
-            userId: userIdRef.current,
-            data: playSpeed,
-          }),
-        )
+        if (broadcast) {
+          sendMessage(
+            JSON.stringify({
+              event: 'playSpeed',
+              userId: userIdRef.current,
+              data: playSpeed,
+            }),
+          )
+        }
         audioPlayerRef.current.playbackRate = playSpeed
       }
     },
     [sendMessage],
   )
 
-  const handleForward = useCallback(() => {
-    if (audioPlayerRef.current) {
-      const seekTo =
-        audioPlayerRef.current.currentTime + 30 > audioPlayerRef.current.duration
-          ? audioPlayerRef.current.duration
-          : audioPlayerRef.current.currentTime + 30
-      sendMessage(
-        JSON.stringify({
-          event: 'seekTo',
-          userId: userIdRef.current,
-          data: seekTo,
-        }),
-      )
-      audioPlayerRef.current.currentTime = seekTo
-    }
+  const handleForward = useCallback(
+    (broadcast: boolean = true) => {
+      if (audioPlayerRef.current) {
+        const seekTo =
+          audioPlayerRef.current.currentTime + 30 > audioPlayerRef.current.duration
+            ? audioPlayerRef.current.duration
+            : audioPlayerRef.current.currentTime + 30
+        if (broadcast) {
+          sendMessage(
+            JSON.stringify({
+              event: 'seekTo',
+              userId: userIdRef.current,
+              data: seekTo,
+            }),
+          )
+        }
+        audioPlayerRef.current.currentTime = seekTo
+      }
+    },
+    [sendMessage],
+  )
+
+  const handleBackward = useCallback(
+    (broadcast: boolean = true) => {
+      if (audioPlayerRef.current) {
+        const seekTo =
+          audioPlayerRef.current.currentTime - 15 < 0 ? 0 : audioPlayerRef.current.currentTime - 15
+        if (broadcast) {
+          sendMessage(
+            JSON.stringify({
+              event: 'seekTo',
+              userId: userIdRef.current,
+              data: seekTo,
+            }),
+          )
+        }
+        audioPlayerRef.current.currentTime = seekTo
+      }
+    },
+    [sendMessage],
+  )
+
+  const handleSyncButtonClick = useCallback(() => {
+    sendMessage(
+      JSON.stringify({
+        event: 'getPlayState',
+        userId: userIdRef.current,
+        data: null,
+      }),
+    )
   }, [sendMessage])
 
-  const handleBackward = useCallback(() => {
-    if (audioPlayerRef.current) {
-      const seekTo =
-        audioPlayerRef.current.currentTime - 15 < 0 ? 0 : audioPlayerRef.current.currentTime - 15
-      sendMessage(
-        JSON.stringify({
-          event: 'seekTo',
-          userId: userIdRef.current,
-          data: seekTo,
-        }),
-      )
-      audioPlayerRef.current.currentTime = seekTo
-    }
+  const sendHelloMessage = useCallback(() => {
+    sendMessage(
+      JSON.stringify({
+        event: 'hello',
+        userId: userIdRef.current,
+        data: null,
+      }),
+    )
   }, [sendMessage])
 
-  const debouncedSeekTo = useDebouncedCallback((newCurrentTime: number) => {
-    if (audioPlayerRef.current) {
-      audioPlayerRef.current.currentTime = newCurrentTime
+  const updatePlayState = useCallback(
+    (playTime: number, isPlaying: boolean, playSpeed: number) => {
+      const timestamp = new Date().getTime()
       sendMessage(
         JSON.stringify({
-          event: 'seekTo',
+          event: 'updatePlayState',
           userId: userIdRef.current,
-          data: newCurrentTime,
+          data: {
+            playTime: playTime,
+            isPlaying: isPlaying,
+            playSpeed: playSpeed,
+            timestamp: timestamp,
+          },
         }),
       )
+    },
+    [sendMessage],
+  )
+
+  const debouncedSeekTo = useDebouncedCallback(
+    (newCurrentTime: number, broadcast: boolean = true) => {
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.currentTime = newCurrentTime
+        if (broadcast) {
+          sendMessage(
+            JSON.stringify({
+              event: 'seekTo',
+              userId: userIdRef.current,
+              data: newCurrentTime,
+            }),
+          )
+        }
+      }
+    },
+    50,
+  )
+
+  useEffect(() => {
+    if (isPlayButtonClicked) {
+      const intervalId = setInterval(() => {
+        if (audioPlayerRef.current) {
+          updatePlayState(Math.floor(audioPlayerRef.current.currentTime), isPlaying, playSpeed)
+        }
+      }, 5000)
+      return () => clearInterval(intervalId)
     }
-  }, 50)
+  }, [isPlayButtonClicked, isPlaying, playSpeed, updatePlayState])
 
   useEffect(() => {
     const handleLoadedMetaData = () => {
@@ -197,13 +287,7 @@ function PodcastPlayer(props: {
       if (websocketMessage['userId'] !== userIdRef.current && audioPlayerRef.current) {
         switch (websocketMessage['event']) {
           case 'seekTo':
-            if (websocketMessage['data'] > audioPlayerRef.current.duration) {
-              audioPlayerRef.current.currentTime = audioPlayerRef.current.duration
-            } else if (websocketMessage['data'] < 0) {
-              audioPlayerRef.current.currentTime = 0
-            } else {
-              audioPlayerRef.current.currentTime = websocketMessage['data']
-            }
+            handleSeekTo(websocketMessage['data'], false)
             break
           case 'play':
             audioPlayerRef.current.volume = 1.0
@@ -223,10 +307,27 @@ function PodcastPlayer(props: {
             })
             break
           case 'pause':
-            audioPlayerRef.current.pause()
+            handlePause(false)
             break
           case 'playSpeed':
-            audioPlayerRef.current.playbackRate = websocketMessage['data']
+            handlePlaySpeedChange(websocketMessage['data'], false)
+            break
+          case 'hello':
+          case 'playState':
+            if (websocketMessage['data'] === null) {
+              // Show error toast only when the event is 'playState'
+              if (websocketMessage['event'] === 'playState') {
+                toast.error('无法同步进度，请稍后重试')
+              }
+            } else {
+              const playTime = websocketMessage['data']['playTime']
+              const isPlaying = websocketMessage['data']['isPlaying']
+              const playSpeed = websocketMessage['data']['playSpeed']
+              handleSeekTo(playTime, false)
+              isPlaying ? handlePlay(false) : handlePause(false)
+              handlePlaySpeedChange(playSpeed, false)
+              toast.success('已为您同步到好友的播放位置')
+            }
             break
           default:
             console.log(`Unknown event: ${websocketMessage['event']}`)
@@ -234,7 +335,7 @@ function PodcastPlayer(props: {
         }
       }
     }
-  }, [lastMessage])
+  }, [handlePause, handlePlay, handlePlaySpeedChange, handleSeekTo, lastMessage])
 
   useEffect(() => {
     if ('mediaSession' in navigator) {
@@ -255,15 +356,15 @@ function PodcastPlayer(props: {
   useEffect(() => {
     if ('mediaSession' in navigator) {
       // See <https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler>.
-      navigator.mediaSession.setActionHandler('play', handlePlay)
-      navigator.mediaSession.setActionHandler('pause', handlePause)
+      navigator.mediaSession.setActionHandler('play', () => handlePlay())
+      navigator.mediaSession.setActionHandler('pause', () => handlePause())
       navigator.mediaSession.setActionHandler('seekto', (e) => {
         if (e.seekTime) {
           handleSeekTo(e.seekTime)
         }
       })
-      navigator.mediaSession.setActionHandler('seekforward', handleForward)
-      navigator.mediaSession.setActionHandler('seekbackward', handleBackward)
+      navigator.mediaSession.setActionHandler('seekforward', () => handleForward())
+      navigator.mediaSession.setActionHandler('seekbackward', () => handleBackward())
     }
   }, [handleBackward, handleForward, handlePause, handlePlay, handleSeekTo])
 
@@ -328,10 +429,14 @@ function PodcastPlayer(props: {
         playSpeed={playSpeed}
         playSpeedSelections={props.playSpeedSelections}
         onPlaySpeedChange={handlePlaySpeedChange}
-        onPlayClick={() => {
+        onPlayButtonClick={() => {
           if (!isPlayable) {
             toast.error('音频还未加载完毕！')
             return
+          }
+          if (!isPlayButtonClicked) {
+            setIsPlayButtonClicked(true)
+            sendHelloMessage()
           }
           if (isPlaying) {
             handlePause()
@@ -339,13 +444,9 @@ function PodcastPlayer(props: {
             handlePlay()
           }
         }}
-        onBackwardClick={handleBackward}
-        onForwardClick={handleForward}
-        onSyncToEveryOneClick={() => {
-          if (audioPlayerRef.current) {
-            handleSeekTo(audioPlayerRef.current.currentTime)
-          }
-        }}
+        onBackwardButtonClick={handleBackward}
+        onForwardButtonClick={handleForward}
+        onSyncButtonClick={handleSyncButtonClick}
       />
       <div
         className={css`
