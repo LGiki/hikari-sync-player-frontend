@@ -1,5 +1,6 @@
 import { css, keyframes } from '@emotion/css'
 import { ASSETS_BASE_URL } from '../../util/constants'
+import Image from 'next/image'
 
 const rotate = keyframes`
   0% {
@@ -18,10 +19,10 @@ function ControlButtons(props: {
   playSpeed: number
   playSpeedSelections: number[]
   onPlaySpeedChange: (newPlaySpeed: number) => void
-  onBackwardClick: () => void
-  onPlayClick: () => void
-  onForwardClick: () => void
-  onSyncToEveryOneClick: () => void
+  onBackwardButtonClick: () => void
+  onPlayButtonClick: () => void
+  onForwardButtonClick: () => void
+  onSyncButtonClick: () => void
   margin?: {
     top?: number
     right?: number
@@ -68,21 +69,23 @@ function ControlButtons(props: {
           </option>
         ))}
       </select>
-      <img
-        height={50}
+      <Image
         alt="Backward 15 seconds"
         title="Backward 15 seconds"
         src={`${ASSETS_BASE_URL}/icons/backward.15.svg`}
-        onClick={props.onBackwardClick}
+        height={50}
+        width={50}
+        onClick={props.onBackwardButtonClick}
       />
-      <img
+      <Image
         height={65}
-        alt="Play"
+        width={65}
+        alt={props.isPlayable ? (props.isPlaying ? 'Pause' : 'Play') : 'Loading'}
         title={props.isPlayable ? (props.isPlaying ? 'Pause' : 'Play') : 'Loading'}
         src={`${ASSETS_BASE_URL}/icons/${
           props.isPlayable ? (props.isPlaying ? 'pause' : 'play') : 'loading'
         }.svg`}
-        onClick={props.onPlayClick}
+        onClick={props.onPlayButtonClick}
         className={
           !props.isPlayable
             ? css`
@@ -91,23 +94,21 @@ function ControlButtons(props: {
             : ''
         }
       />
-      <img
+      <Image
         height={50}
+        width={50}
         alt="Forward 30 seconds"
         title="Forward 30 seconds"
         src={`${ASSETS_BASE_URL}/icons/forward.30.svg`}
-        onClick={props.onForwardClick}
+        onClick={props.onForwardButtonClick}
       />
-      <img
+      <Image
         width={25}
         height={25}
         alt="Sync"
         title="将当前进度同步给所有人"
         src={`${ASSETS_BASE_URL}/icons/sync.svg`}
-        className={css`
-          cursor: pointer;
-        `}
-        onClick={props.onSyncToEveryOneClick}
+        onClick={props.onSyncButtonClick}
       />
     </div>
   )
