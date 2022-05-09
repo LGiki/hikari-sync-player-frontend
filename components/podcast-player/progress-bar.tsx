@@ -56,7 +56,6 @@ function ProgressBar(props: {
       }}
       className={css`
         background-color: rgba(255, 255, 255, 0.15);
-        position: relative;
         border-radius: 5px;
         overflow: hidden;
         width: 100%;
@@ -66,6 +65,7 @@ function ProgressBar(props: {
         margin-bottom: ${props.margin?.bottom || 0}px;
         margin-left: ${props.margin?.left || 0}px;
         cursor: pointer;
+        z-index: 2;
       `}
     >
       <div
@@ -73,10 +73,10 @@ function ProgressBar(props: {
           transform: `translateX(-${(1 - props.progress) * 100}%)`,
         }}
         className={css`
-          position: absolute;
           background-color: rgba(255, 255, 255, 0.7);
           height: 100%;
           width: 100%;
+          z-index: 1;
         `}
       />
     </div>
