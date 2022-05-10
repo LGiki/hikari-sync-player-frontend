@@ -31,7 +31,8 @@ function ProgressBar(props: {
   return (
     <div
       ref={progressBarRef}
-      onTouchStart={props.onSeekBegin}
+      onTouchStartCapture={props.onSeekBegin}
+      onTouchStart={handleProgressChange}
       onTouchMove={handleProgressChange}
       onTouchEnd={props.onSeekEnd}
       onMouseDownCapture={(e) => {
