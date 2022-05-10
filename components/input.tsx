@@ -1,6 +1,7 @@
 import { css } from '@emotion/css'
 import { KeyboardEvent, MutableRefObject } from 'react'
 import { ASSETS_BASE_URL } from '../util/constants'
+import Image from "next/image";
 
 function Input(props: {
   placeholder?: string
@@ -39,6 +40,7 @@ function Input(props: {
         onChange={(e) => props.onChange && props.onChange(e.target.value)}
         placeholder={props.placeholder}
         enterKeyHint={props.enterKeyHint}
+        style={props.value?.length !== 0 ? {marginRight: 8} : undefined}
         className={css`
           flex: 1;
           border: 0;
@@ -54,14 +56,13 @@ function Input(props: {
         `}
       />
       {props.value?.length !== 0 && (
-        <img
+        <Image
+          width={16}
+          height={16}
           alt="Clear"
           title="Clear"
           src={`${ASSETS_BASE_URL}/icons/clear.svg`}
           className={css`
-            margin-left: 8px;
-            width: 16px;
-            height: 16px;
             cursor: pointer;
           `}
           onClick={props.onClearClick}
