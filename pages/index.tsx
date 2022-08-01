@@ -162,6 +162,7 @@ const Home: NextPage = () => {
           margin-bottom: 5px;
           font-size: 0.9rem;
           z-index: 1;
+          line-height: 150%;
         `}
       >
         <p>
